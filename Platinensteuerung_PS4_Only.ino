@@ -30,7 +30,7 @@ Motor motor(13, //PWM Front
             100,//Max Duty
             30, //Min Duty
             1, //Direction Change Delay
-            1000000//Freq
+            100000//Freq
             );  // direction_change_delay = 1 (NICHT 500!)
 SteeringServo steering(26, -3, 90, 90, 6);
 LEDManager leftIndicator({16}, {4}, 0, 100, 1000);
