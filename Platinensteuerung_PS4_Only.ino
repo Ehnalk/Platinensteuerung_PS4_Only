@@ -236,7 +236,7 @@ void blockingLEDAnimation() {
     frontLights.startIndicating();
     brakeLights.startIndicating();
     rearLights.startIndicating();
-    delay(1000)
+    delay(1000);
     leftIndicator.stopIndicating();
     rightIndicator.stopIndicating();
     frontLights.stopIndicating();
