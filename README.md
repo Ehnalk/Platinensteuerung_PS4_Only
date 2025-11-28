@@ -2,7 +2,19 @@
 
 Ein ESP32-basiertes RC-Buggy Steuerungssystem mit PS4 Controller über Bluetooth.
 
+### **Steuerung**
+
+R2: Vorwärts
+L2: Rückwärts
+Linker Joystick: Lenken
+Dreieck: Alle Lichter blinken Lassen
+Pfeil rechts: Nach rechts blinken
+Pfeil links: Nach links blinken
+Pfeil unten: Alle blink Animationen aus machen
+
 ### **Pin-Belegung**
+
+Kann in dem Code geänder werden falls notwendig
 
 #### Motor
 

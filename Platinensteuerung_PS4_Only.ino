@@ -59,7 +59,7 @@ LEDManager rearLights({18}, 1, 100, 1000);
 LEDManager brakeLights({4}, 1, 100, 1000);
 
 
-std::vector<LEDManager> alLleds;
+std::vector<LEDManager*> allLeds;
 
 // ------------------------------------------------------------------------
 //        Setup Funktionen
@@ -108,23 +108,6 @@ void lightAnimation()
   }
 }
 
-void indicatorCallback(LEDManager* Ledptr){
-  
-  LEDManager* _LED = (LEDManager*)Ledptr;
-  if(!indicatorTiming){
-    Serial.println(indicatorTiming);
-    Serial.println("Starting Indicating");
-    _LED->startIndicating();
-    indicatorTiming = true;
-    return;
-  }
-  Serial.println(indicatorTiming);
-  Serial.println("Stoping Indicating");
-  _LED->stopIndicating();
-  indicatorTiming, isBlinking = false;
-  LED_indicator_manager.detach();
-}
-
 
 // ------------------------------------------------------------------------
 //        BLE PS4 Controller Funktionen
@@ -150,27 +133,33 @@ void parseButtonLogic() {
   if(PS4.Triangle())  {
     Serial.print("Triangle, ");
     
-    for(LEDManager* i : allLeds)
-    {
-      i->startIndicating();
-    }
+    leftIndicator.startIndicating();
+    rightIndicator.startIndicating();
+    frontLights.startIndicating();
+    brakeLights.startIndicating();
+    rearLights.startIndicating();
   }
   // Mit dem rechts Pfeil kann man nach rechts Blinken
   if(PS4.Right()) {
     rightIndicator.startIndicating();
   }
-  //mit dem links Pfeil kann man nach links Blinken
+  // Mit dem links Pfeil kann man nach links Blinken
   if(PS4.Left())  {
     leftIndicator.startIndicating();
   }
+  // Mit dem unten Pfeil kann man alle LEDs aufhören lassen zu blinken
   if(PS4.Down())  {
     Serial.println("Down");
-    for(LEDManager i : allLeds)
-    {
-      Serial.println("Stopping LEDs");
-      i->stopIndicating();
-    }
+    leftIndicator.stopIndicating();
+    rightIndicator.stopIndicating();
+    frontLights.stopIndicating();
+    brakeLights.stopIndicating();
+    rearLights.stopIndicating();
+
+    frontLights.turnOn(100);
+    brakeLights.turnOn(100);
   }
+
 }
 
 // Variable um nur jeden dritten R2/L2 Wert zu verwerten, optimierungsversuch
@@ -179,6 +168,14 @@ uint8_t SkipDataCounter = 0;
 // Funktion die Bei eingehenden PS4 Daten aufgerufen wird, diese funktion ist auch für die verarbeitung 
 // /verwertung der Daten zuständig.
 void onIncommingPS4Data() { 
+
+  if(motor.getCurrentDuty() < 0)  {
+    rearLights.turnOn(100);
+    
+  }
+  if(motor.getCurrentDuty() > 0)  {
+    rearLights.turnOff();
+  }
 
   parseButtonLogic();
 
@@ -224,15 +221,28 @@ void onIncommingPS4Data() {
 
 void onConnect()  {
   Serial.println("Controller Connected!");
-  lightAnimation();
+  blockingLEDAnimation();
 }
 
 
 void onDisconnect() {
   Serial.println("Controller Disconnected!");
-  lightAnimation();
+  blockingLEDAnimation();
 } 
 
+void blockingLEDAnimation() {
+    leftIndicator.startIndicating();
+    rightIndicator.startIndicating();
+    frontLights.startIndicating();
+    brakeLights.startIndicating();
+    rearLights.startIndicating();
+    delay(1000)
+    leftIndicator.stopIndicating();
+    rightIndicator.stopIndicating();
+    frontLights.stopIndicating();
+    brakeLights.stopIndicating();
+    rearLights.stopIndicating();
+}
 
 void setup() {
   setZero();
