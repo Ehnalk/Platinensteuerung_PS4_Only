@@ -51,8 +51,8 @@ Pin 4   → Bremslicht
 | ESP32Servo | latest | Über Library Manager |
 
 **Custom Libraries** (manuell installieren):
-- BuggyControl: https://github.com/niklasschoening/BuggyControl
-  über die grüne Schaltfläche "<>Code" und dann auf Download ZIP.
+- BuggyControl: [https://github.com/niklasschoening/BuggyControl](https://github.com/niklasschoening/BuggyControl/releases)
+  und dann denn neuesten Source code(zip) Herunterladen.
 
 Diese in Arduino IDE > Sketch > Inlcude Libary > Add .ZIP Library... 
 und dann Die heruntergeladene Datei BuggyControl.zip auswählen.
@@ -60,6 +60,7 @@ und dann Die heruntergeladene Datei BuggyControl.zip auswählen.
 ### **3. Code hochladen**
 
 1. ESP32 per USB verbinden
+   Falls nicht automitsch erkannt:
 2. Port auswählen: `Werkzeuge → Port → /dev/ttyUSB0` (oder COM-Port unter Windows)
 3. Upload-Speed: `921600`
 4. `Sketch → Hochladen`
