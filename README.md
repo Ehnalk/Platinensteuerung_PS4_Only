@@ -47,7 +47,7 @@ Pin 4   → Bremslicht
 
 | Bibliothek | Version | Link |
 |-----------|---------|------|
-| PS4Controller | latest | [GitHub](https://github.com/aed3/PS4-esp32) |
+| PS4Controller | latest | über Library Manager |
 | ESP32Servo | latest | Über Library Manager |
 
 **Custom Libraries** (manuell installieren):
