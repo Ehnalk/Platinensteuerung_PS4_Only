@@ -36,7 +36,7 @@ Pin 4   → Bremslicht
    https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
    
 4. Werkzeuge → Board → Boardverwalter
-5. "esp32" suchen und **Version 2.0.14** installieren (nicht 3.x!)
+5. "esp32" suchen und die bibliothek esp32 von espressif System installieren
 
 #### Board auswählen
 - Werkzeuge → Board → ESP32 Arduino → ESP32 Dev Module
@@ -78,11 +78,11 @@ const char* CONTROLLER_MAC = "AA:BB:CC:DD:EE:FF"; // Die Host-Mac-Adresse eingeb
 
 **Host-MAC-Adresse herausfinden (Windows):**
 Das Tool sixaxispairtool herunterladen und den Controller via USB-Leitung mit dem PC/Laptop verbinden.
-Es Sollte nun eine Host-Mac-Adresse in dem Tool stehen
+Es Sollte nun eine Host-Mac-Adresse in dem Tool stehen.
 
 <img width="209" height="112" alt="Screenshot 2025-11-26 113141 2" src="https://github.com/user-attachments/assets/cd6cd1cd-2b2e-4f93-aa6c-20d4299a9159" />
----
 
+---
 
 ## 🕹️ Steuerung
 
