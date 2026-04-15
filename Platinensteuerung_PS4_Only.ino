@@ -3,20 +3,10 @@
 #include <Motor.h>
 #include <SteeringServo.h>
 
-#include <PS4Controller.h>
 #include <ps4.h>
-#include <ps4_int.h>
 
-#include <dummy.h>
-
-#include <ESP32Servo.h>
-#include <Arduino.h>
-#include <BLESecurity.h>
 #include <Ticker.h>
 #include <vector>
-#include <algorithm>
-#include <string>
-#include <math.h>
 
 #include <esp_task_wdt.h>
 
@@ -31,8 +21,7 @@ const char* CONTROLLER_MAC  = "60:5b:b4:b2:90:b6";
 Ticker LED_indicator_manager;
 
 bool isLightAnimationRunning = false;
-bool isBlinking = false;
-bool indicatorTiming = false; // anstatt int da nur 2 werte benötigt werden
+
 
 //Klassen für die Motorsteuerung global initialisieren
 Motor motor(13, //PWM Front
