@@ -1,4 +1,3 @@
-
 #include <BuggyControl.h>
 #include <LEDManager.h>
 #include <Motor.h>
@@ -8,7 +7,6 @@
 #include <ps4.h>
 #include <ps4_int.h>
 
-#include <Ticker.h>
 #include <vector>
 
 #include <esp_task_wdt.h>
@@ -21,8 +19,6 @@ const char* CONTROLLER_MAC  = "60:5b:b4:b2:90:b6";
 // 
 // *********************************************************
 
-Ticker LED_indicator_manager;
-
 bool isLightAnimationRunning = false;
 
 //Klassen für die Motorsteuerung global initialisieren
@@ -34,7 +30,7 @@ Motor motor(13, //PWM Front
             30, //Min Duty
             100, //Direction Change Delay
             30000//Freq
-            );  // direction_change_delay = 1 (NICHT 500!)
+            );
 SteeringServo steering(26,  // Pin des Servos
                        -3,  // Power pin nicht auf dem ESP
                        90,  // Start Winkel
