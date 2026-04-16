@@ -57,8 +57,8 @@ std::vector<LEDManager*> allLeds;
 // ------------------------------------------------------------------------
 
 
-void config()   //Config-Klasse, hier können alle Werte angepasst werden.
-{
+void setup() {
+  setZero();
   Serial.begin(115200);
   Serial.println("Start");
 
@@ -74,6 +74,15 @@ void config()   //Config-Klasse, hier können alle Werte angepasst werden.
   // Callback-Loop des PS4 Controllers starten
   beginPS4Connection(NULL);
   setZero();
+  // KRITISCH: steering.begin() MUSS in setup() aufgerufen werden!
+  // Nicht in einer Unterfunktion!
+  steering.begin();
+  
+  
+  // setZero() wird bereits in config() aufgerufen
+  esp_task_wdt_deinit();
+  setZero();
+  delay(100);
 }
 
 
@@ -88,9 +97,7 @@ void beginPS4Connection(void *pvParameters) {
 
   PS4.begin(CONTROLLER_MAC);
 
-  Serial.println("Waiting for Controller");
-  Serial.println("PS4 Controller searching in Thread: ");
-  Serial.println(xPortGetCoreID());
+  Serial.printf("Waiting for Controller. PS4 Controller searching in Thread: %d\n", xPortGetCoreID());
   motor.changeSpeedAbsolute(0);
 }
 
@@ -137,13 +144,12 @@ uint8_t SkipDataCounter = 0;
 // /verwertung der Daten zuständig.
 void onIncommingPS4Data() { 
 
-  if(motor.getCurrentDuty() < 0)  {
+  if(motor.getCurrentDuty() < 0)
     rearLights.turnOn(100);
     
   }
   if(motor.getCurrentDuty() > 0)  {
     rearLights.turnOff();
-  }
 
   parseButtonLogic();
 
@@ -164,12 +170,12 @@ void onIncommingPS4Data() {
   if(LX_percentage != steering.getCurrentSteeringPercent()) {
 
     if(abs(PS4.LStickX()) > 10 ){
-      Serial.println(PS4.LStickX());
+      Serial.printf("LStickX: %d\n", PS4.LStickX());
       // Der Rechte Joystick gibt einen Wert auf der X-Achse von 0 bis 255 aus
       steering.steerAbsolute(LX_percentage);
     }else {
       steering.steerAbsolute(0);
-      Serial.println(0);
+      Serial.printf("LStickX: 0\n");
     }
   }
 
@@ -178,14 +184,33 @@ void onIncommingPS4Data() {
     return;
   }
   
-  Serial.print(" R2: ");
-  Serial.print(PS4.R2Value());
-  Serial.print(" L2: ");
-  Serial.println(PS4.L2Value());
+  Serial.printf(" R2: %d L2: %d\n", PS4.R2Value(), PS4.L2Value());
   motor.changeSpeedAbsolute(R2L2_in_percentage);
 
 }
 
+
+void animateAllLEDs() {
+  leftIndicator.startIndicating();
+  rightIndicator.startIndicating();
+  frontLights.startIndicating();
+  brakeLights.startIndicating();
+  rearLights.startIndicating();
+}
+
+void stopAllLEDs() {
+  leftIndicator.stopIndicating();
+  rightIndicator.stopIndicating();
+  frontLights.stopIndicating();
+  brakeLights.stopIndicating();
+  rearLights.stopIndicating();
+}
+
+void blockingLEDAnimation() {
+  animateAllLEDs();
+  delay(1000);
+  stopAllLEDs();
+}
 
 void onConnect()  {
   Serial.println("Controller Connected!");
@@ -196,35 +221,9 @@ void onConnect()  {
 void onDisconnect() {
   Serial.println("Controller Disconnected!");
   blockingLEDAnimation();
-} 
-
-void blockingLEDAnimation() {
-    leftIndicator.startIndicating();
-    rightIndicator.startIndicating();
-    frontLights.startIndicating();
-    brakeLights.startIndicating();
-    rearLights.startIndicating();
-    delay(1000);
-    leftIndicator.stopIndicating();
-    rightIndicator.stopIndicating();
-    frontLights.stopIndicating();
-    brakeLights.stopIndicating();
-    rearLights.stopIndicating();
 }
 
-void setup() {
-  setZero();
-  config();
-  // KRITISCH: steering.begin() MUSS in setup() aufgerufen werden!
-  // Nicht in einer Unterfunktion!
-  steering.begin();
-  
-  
-  // setZero() wird bereits in config() aufgerufen
-  esp_task_wdt_deinit();
-  setZero();
-  delay(100);
-}
+
 
 void loop() {
   // put your main code here, to run repeatedly:
@@ -234,7 +233,7 @@ void loop() {
 void setZero()
 {
 
-  Serial.println(("Null"));
+  Serial.println("Null");
   ledcWrite(12, 0);
   ledcWrite(13, 0);
 
