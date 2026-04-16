@@ -144,12 +144,13 @@ uint8_t SkipDataCounter = 0;
 // /verwertung der Daten zuständig.
 void onIncommingPS4Data() { 
 
-  if(motor.getCurrentDuty() < 0)
+  if(motor.getCurrentDuty() < 0)  {
     rearLights.turnOn(100);
     
   }
   if(motor.getCurrentDuty() > 0)  {
     rearLights.turnOff();
+  }
 
   parseButtonLogic();
 
