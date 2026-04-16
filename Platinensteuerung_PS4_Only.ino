@@ -104,11 +104,7 @@ void parseButtonLogic() {
   if(PS4.Triangle())  {
     Serial.print("Triangle, ");
     
-    leftIndicator.startIndicating();
-    rightIndicator.startIndicating();
-    frontLights.startIndicating();
-    brakeLights.startIndicating();
-    rearLights.startIndicating();
+    animateAllLEDs();
   }
   // Mit dem rechts Pfeil kann man nach rechts Blinken
   if(PS4.Right()) {
@@ -121,11 +117,7 @@ void parseButtonLogic() {
   // Mit dem unten Pfeil kann man alle LEDs aufhören lassen zu blinken
   if(PS4.Down())  {
     Serial.println("Down");
-    leftIndicator.stopIndicating();
-    rightIndicator.stopIndicating();
-    frontLights.stopIndicating();
-    brakeLights.stopIndicating();
-    rearLights.stopIndicating();
+    stopAllLEDs();
 
     frontLights.turnOn(100);
     brakeLights.turnOn(100);
