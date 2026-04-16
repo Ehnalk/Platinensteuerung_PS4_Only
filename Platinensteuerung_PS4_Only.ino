@@ -76,32 +76,9 @@ void config()   //Config-Klasse, hier können alle Werte angepasst werden.
   setZero();
 }
 
-// ------------------------------------------------------------------------
-//        LED Animations Funktionen
-// ------------------------------------------------------------------------
-
-//  Licht Animationsfunktion, aka eine funktion um die LED an und aus zu machen für 'blink_amount' mal.
-//  verwendung von Delays kann evtl blocking sein.
-void lightAnimation()  
-{ 
-  
-  if(isLightAnimationRunning){
-    Serial.println("stop LED Animation");
-     for(LEDManager* i : allLeds)
-    {
-      i->stopIndicating();
-    }
-  }
-  Serial.println("starting LED Animation");
-  for(LEDManager* i : allLeds)
-  {
-    i->stopIndicating();
-  }
-}
-
 
 // ------------------------------------------------------------------------
-//        BLE PS4 Controller Funktionen
+//        Bluetooth PS4 Controller Funktionen
 // ------------------------------------------------------------------------
 
 
