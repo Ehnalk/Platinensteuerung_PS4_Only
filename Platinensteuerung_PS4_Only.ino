@@ -12,33 +12,33 @@
 #include <esp_task_wdt.h>
 
 // *********************************************************
-//        PS4 Controller mac Adresse hier einfungen
+//        Enter the PS4 controller's MAC address here
 // *********************************************************
 const char* CONTROLLER_MAC  = "60:5b:b4:b2:90:b6";
 // *********************************************************
-// 
+//
 // *********************************************************
 
 bool isLightAnimationRunning = false;
 
-//Klassen für die Motorsteuerung global initialisieren
+//Initialize classes for motor control globally
 Motor motor(13, //PWM Front
             12, //PWM Back
-            14, //Dauer_High Front
-            27, //Dauer-High Back
+            14, //Always High Front
+            27, //Always High Back
             100,//Max Duty
             30, //Min Duty
             100, //Direction Change Delay
             30000//Freq
             );
-SteeringServo steering(26,  // Pin des Servos
-                       -3,  // Power pin nicht auf dem ESP
-                       90,  // Start Winkel
-                       90,  // Lenkwinkel ( also Start Winkel +- Lenkwinkel ist Maximale Lenkung)
-                       6);  // Deadzone des Servos -> unterhalb diesem Wertes wird nicht gelenkt
-LEDManager leftIndicator({16},    // Pin LED 
-                          0,      // Standart Wert 0 = standartmäßig aus
-                          100,    // Helligkeit (aka Duty des PWM)
+SteeringServo steering(26,  // Servo pin
+                       -3,  // Power pin, not on the ESP
+                       90,  // Start angle
+                       90,  // Steering angle (i.e. start angle +- steering angle is maximum steering)
+                       6);  // Servo deadzone -> below this value there is no steering
+LEDManager leftIndicator({16},    // LED pin
+                          0,      // Default value 0 = off by default
+                          100,    // Brightness (aka PWM duty)
                           1000);  // Freq
 LEDManager rightIndicator({5}, 0, 100, 1000);
 LEDManager frontLights({19}, 1, 100, 1000);
@@ -49,7 +49,7 @@ LEDManager brakeLights({4}, 1, 100, 1000);
 std::vector<LEDManager*> allLeds;
 
 // ------------------------------------------------------------------------
-//        Setup Funktionen
+//        Setup Functions
 // ------------------------------------------------------------------------
 
 
@@ -62,20 +62,20 @@ void setup() {
   pinMode(26, OUTPUT);  // Servo
   setZero();
 
-  // Callback-Loop des PS4 Controllers Initialisieren
+  // Initialize the PS4 controller's callback loop
   PS4.attachOnConnect(onConnect);
   PS4.attachOnDisconnect(onDisconnect);
   PS4.attach(onIncommingPS4Data);
   setZero();
-  // Callback-Loop des PS4 Controllers starten
+  // Start the PS4 controller's callback loop
   beginPS4Connection(NULL);
   setZero();
-  // KRITISCH: steering.begin() MUSS in setup() aufgerufen werden!
-  // Nicht in einer Unterfunktion!
+  // CRITICAL: steering.begin() MUST be called in setup()!
+  // Not in a subfunction!
   steering.begin();
-  
-  
-  // setZero() wird bereits in config() aufgerufen
+
+
+  // setZero() is already called in config()
   esp_task_wdt_deinit();
   setZero();
   delay(100);
@@ -83,12 +83,12 @@ void setup() {
 
 
 // ------------------------------------------------------------------------
-//        Bluetooth PS4 Controller Funktionen
+//        Bluetooth PS4 Controller Functions
 // ------------------------------------------------------------------------
 
 
-// Beginnt die Bluetooth verbindung mit dem PS4 Controller bzw die Bluetooth suche.
-// Die Paramater '*pvParamaeters* ist für eine Spätere verwendung von Multithreading.
+// Starts the Bluetooth connection with the PS4 controller, i.e. the Bluetooth search.
+// The parameter 'pvParameters' is for later use with multithreading.
 void beginPS4Connection(void *pvParameters) {
 
   PS4.begin(CONTROLLER_MAC);
@@ -97,24 +97,24 @@ void beginPS4Connection(void *pvParameters) {
   motor.changeSpeedAbsolute(0);
 }
 
-// Logik für Die PS4 Knöpfe wie Rechts, Links und Dreieck. 
+// Logic for the PS4 buttons like right, left, and triangle.
 void parseButtonLogic() {
 
-  //  Auf Dreieck soll man kann man alle Lichter an machen können.
+  // Pressing triangle turns on all lights.
   if(PS4.Triangle())  {
     Serial.print("Triangle, ");
-    
+
     animateAllLEDs();
   }
-  // Mit dem rechts Pfeil kann man nach rechts Blinken
+  // The right arrow makes the right indicator blink
   if(PS4.Right()) {
     rightIndicator.startIndicating();
   }
-  // Mit dem links Pfeil kann man nach links Blinken
+  // The left arrow makes the left indicator blink
   if(PS4.Left())  {
     leftIndicator.startIndicating();
   }
-  // Mit dem unten Pfeil kann man alle LEDs aufhören lassen zu blinken
+  // The down arrow stops all LEDs from blinking
   if(PS4.Down())  {
     Serial.println("Down");
     stopAllLEDs();
@@ -125,12 +125,12 @@ void parseButtonLogic() {
 
 }
 
-// Variable um nur jeden dritten R2/L2 Wert zu verwerten, optimierungsversuch
+// Variable to only process every third R2/L2 value, an optimization attempt
 uint8_t SkipDataCounter = 0;
 
-// Funktion die Bei eingehenden PS4 Daten aufgerufen wird, diese funktion ist auch für die verarbeitung 
-// /verwertung der Daten zuständig.
-void onIncommingPS4Data() { 
+// Function called when incoming PS4 data arrives; this function is also
+// responsible for processing/using the data.
+void onIncommingPS4Data() {
 
   if(motor.getCurrentDuty() < 0)  {
     rearLights.turnOn(100);
@@ -155,12 +155,12 @@ void onIncommingPS4Data() {
   int R2L2_in_percentage = (int)round(float((float(PS4.R2Value() - PS4.L2Value()) / 255)) * 100);
   int LX_percentage = (int)round(float((float(PS4.LStickX()) / 127 ) * 100));
 
-  // Der Input des Rechten Joystick ist -127 zu 127.
+  // The left joystick's input ranges from -127 to 127.
   if(LX_percentage != steering.getCurrentSteeringPercent()) {
 
     if(abs(PS4.LStickX()) > 10 ){
       Serial.printf("LStickX: %d\n", PS4.LStickX());
-      // Der Rechte Joystick gibt einen Wert auf der X-Achse von 0 bis 255 aus
+      // The left joystick outputs a value on the X-axis from 0 to 255
       steering.steerAbsolute(LX_percentage);
     }else {
       steering.steerAbsolute(0);
@@ -168,7 +168,7 @@ void onIncommingPS4Data() {
     }
   }
 
-  // Wenn der eingehende R2/L2 reduntant ist, wird das programm hier beendet.
+  // If the incoming R2/L2 value is redundant, the function returns here.
   if(R2L2_in_percentage == motor.getCurrentDuty()){
     return;
   }
